@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Germaine Tutoring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sofia+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F8F9F8;
+    --ink: #08120F;
+    --muted: #756F60;
+    --accent: #7A5138;
+    --secondary: #7A5138;
+    --display: 'Bona Nova', Georgia, serif;
+    --body: 'Sofia Sans', -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', Consolas, monospace;
+    --line: color-mix(in srgb, var(--ink) 18%, transparent);
+    --soft: color-mix(in srgb, var(--paper) 92%, var(--ink));
+    --dark-green: #0a1411;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; min-height: 100%;
+    background: var(--paper); color: var(--ink);
+    font-family: var(--body);
+  }
+  button, input { font: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+
+  h1, h2, h3, h4, h5, h6 { font-family: var(--display); margin: 0; color: var(--ink); font-weight: 700; }
+  h1 { font-size: clamp(42px, 7vw, 74px); line-height: 1; }
+  h2 { font-size: clamp(28px, 4vw, 44px); line-height: 1.1; }
+  h3 { font-size: 20px; line-height: 1.2; }
+
+  .kicker { font: 700 10px/1.3 var(--mono); letter-spacing: .15em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  .btn { display: inline-block; border-radius: 5px; border: 1px solid var(--ink); padding: 9px 18px; background: transparent; color: var(--ink); font-weight: 700; text-align: center; }
+  .btn.fill { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* Global Nav */
+  .global-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px; background: var(--dark-green); color: var(--paper);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .global-nav .logo { font-family: var(--display); font-size: 20px; font-weight: 700; letter-spacing: 0.02em; }
+  .global-nav .tabs { display: flex; gap: 20px; }
+  .global-nav .tab {
+    background: none; border: none; color: var(--paper); opacity: 0.7;
+    font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 6px 0; border-bottom: 2px solid transparent;
+  }
+  .global-nav .tab.active { opacity: 1; border-bottom-color: var(--accent); }
+
+  /* Main View Logic */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Sections */
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+  .section { margin-bottom: 60px; }
+
+  /* Marketing Site */
+  .hero { background: var(--dark-green); color: var(--paper); padding: 80px 24px; text-align: center; }
+  .hero h1 { color: var(--paper); margin-bottom: 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
+  .hero .dek { font-size: 18px; color: color-mix(in srgb, var(--paper) 80%, transparent); max-width: 600px; margin: 0 auto 30px; line-height: 1.6; }
+  .hero .btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+
+  .proof-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; padding: 40px 24px; background: var(--soft); border-bottom: 1px solid var(--line); }
+  .proof-item { text-align: center; }
+  .proof-item strong { display: block; font-family: var(--display); font-size: 32px; color: var(--accent); }
+  .proof-item span { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .programs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 40px; }
+  .program-card { background: var(--paper); border: 1px solid var(--line); padding: 30px; border-radius: 8px; position: relative; }
+  .program-card.featured { border-color: var(--accent); box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 10%, transparent); }
+  .program-card.featured::before { content: "Featured"; position: absolute; top: -10px; left: 30px; background: var(--accent); color: white; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 8px; border-radius: 4px; }
+  .program-card h3 { margin-bottom: 10px; }
+  .program-card p { color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+
+  .contact-strip { background: var(--soft); padding: 60px 24px; text-align: center; border-radius: 8px; margin: 40px 0; }
+  .contact-strip h2 { margin-bottom: 20px; }
+  .contact-strip .btn.fill { margin-top: 20px; }
+
+  /* Course Portal */
+  .portal-layout { display: flex; min-height: calc(100vh - 64px); background: var(--soft); }
+  .portal-sidebar { width: 250px; background: var(--dark-green); color: var(--paper); padding: 30px 0; flex-shrink: 0; }
+  .portal-sidebar-nav { display: flex; flex-direction: column; gap: 5px; }
+  .portal-sidebar-nav button { background: none; border: none; color: color-mix(in srgb, var(--paper) 70%, transparent); text-align: left; padding: 12px 30px; font-size: 15px; font-weight: 600; transition: all 0.2s; }
+  .portal-sidebar-nav button:hover, .portal-sidebar-nav button.active { color: var(--paper); background: color-mix(in srgb, var(--paper) 10%, transparent); border-left: 3px solid var(--accent); }
+
+  .portal-content { flex-grow: 1; padding: 40px; overflow-y: auto; background: var(--soft); }
+  .portal-panel { display: none; }
+  .portal-panel.active { display: block; }
+
+  .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+  .stat-card { background: var(--paper); padding: 20px; border-radius: 8px; border: 1px solid var(--line); }
+  .stat-card .label { font: 600 10px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .stat-card .value { font-family: var(--display); font-size: 32px; color: var(--accent); margin-top: 5px; }
+
+  .progress-section { background: var(--paper); padding: 30px; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 40px; }
+  .progress-bar-wrap { height: 8px; background: var(--line); border-radius: 4px; margin-top: 15px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--accent); width: 45%; }
+
+  .session-brief { background: var(--paper); padding: 30px; border-radius: 8px; border: 1px solid var(--line); border-left: 4px solid var(--accent); }
+
+  .review-table { width: 100%; border-collapse: collapse; background: var(--paper); margin-top: 20px; border: 1px solid var(--line); font-size: 14px; }
+  .review-table th, .review-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--line); }
+  .review-table th { font: 600 10px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--soft); }
+
+  .practice-filters { display: flex; gap: 15px; margin-bottom: 20px; }
+  .practice-filters select { padding: 8px 12px; border: 1px solid var(--line); border-radius: 4px; font-family: var(--body); font-size: 14px; background: var(--paper); }
+
+  /* Blog */
+  .blog-hero { padding: 60px 0; border-bottom: 1px solid var(--line); margin-bottom: 40px; }
+  .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+  .blog-card { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+  .blog-card-body { padding: 24px; display: flex; flex-direction: column; flex-grow: 1; }
+  .blog-card .meta { font: 600 10px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .blog-card h3 { margin-bottom: 10px; font-size: 22px; }
+  .blog-card p { color: var(--muted); line-height: 1.5; font-size: 15px; margin-bottom: 20px; flex-grow: 1; }
+  .blog-card .read-more { font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink); margin-top: auto; display: inline-block; }
+
+  .campaign-header { background: var(--soft); padding: 40px; border-radius: 8px; margin: 60px 0 30px; text-align: center; border: 1px solid var(--line); }
+
+  /* Utilities */
+  .tag { display: inline-block; padding: 4px 8px; background: var(--line); border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .tag.correct { background: color-mix(in srgb, #2ecc71 20%, transparent); color: #27ae60; }
+  .tag.wrong { background: color-mix(in srgb, #e74c3c 20%, transparent); color: #c0392b; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .portal-layout { flex-direction: column; }
+    .portal-sidebar { width: 100%; display: flex; overflow-x: auto; padding: 0; }
+    .portal-sidebar-nav { flex-direction: row; }
+    .portal-sidebar-nav button { padding: 15px; white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; }
+    .portal-sidebar-nav button:hover, .portal-sidebar-nav button.active { border-left: none; border-bottom: 3px solid var(--accent); }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .global-nav { flex-direction: column; gap: 10px; padding: 12px; }
+    .global-nav .tabs { width: 100%; justify-content: space-around; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <div class="logo">Germaine Tutoring</div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchView('marketing', event.currentTarget)">Marketing</button>
+    <button class="tab" onclick="switchView('course', event.currentTarget)">Course Portal</button>
+    <button class="tab" onclick="switchView('blog', event.currentTarget)">Blog</button>
+  </div>
+</nav>
+
+<!-- ==================== MARKETING VIEW ==================== -->
+<div id="marketing" class="view active">
+  <section class="hero">
+    <div class="kicker">Process Over Genius</div>
+    <h1>There is no LSAT magic, only repeatable processes.</h1>
+    <p class="dek">Break down complex reasoning into simple, atomized steps. Our targeted methodology changes how you see the LSAT.</p>
+    <button class="btn fill" onclick="alert('Open Booking Modal')">Book a Consult</button>
+  </section>
+
+  <div class="proof-strip">
+    <div class="proof-item"><strong>180</strong><span>Perfect LSAT (2020)</span></div>
+    <div class="proof-item"><strong>500+</strong><span>Students Taught</span></div>
+    <div class="proof-item"><strong>14+</strong><span>Avg Point Improvement</span></div>
+    <div class="proof-item"><strong>483</strong><span>Lesson Course Library</span></div>
+  </div>
+
+  <div class="container">
+    <section class="section" id="methodology">
+      <div class="kicker">Methodology</div>
+      <h2>Philosophy & Approach</h2>
+      <p style="font-size: 18px; color: var(--muted); line-height: 1.6; max-width: 800px; margin-top: 20px;">
+        Complex reasoning becomes manageable when you break it into simple parts. We don't teach tricks. We teach you to identify the repeatable job underneath each question, atomizing arguments into: Job → Claims → Roles → Compress → Operators → Connect → Gap → Prephrase → Verify.
+      </p>
+    </section>
+
+    <section class="section" id="programs">
+      <div class="kicker">Programs</div>
+      <h2>Targeted Instruction Tiers</h2>
+      <div class="programs-grid">
+        <div class="program-card">
+          <h3>2-Hour Acceleration</h3>
+          <p>For targeted troubleshooting on specific question types or sections holding your score back.</p>
+          <div class="kicker" style="margin-bottom: 0;">Tier 1</div>
+        </div>
+        <div class="program-card featured">
+          <h3>8-Hour Elevation</h3>
+          <p>Comprehensive review and strategy rebuild. We map out your reasoning process and fix the core structural flaws.</p>
+          <button class="btn fill" style="width: 100%; margin-top: 10px;">Select Program</button>
+        </div>
+        <div class="program-card">
+          <h3>Elite Retainer</h3>
+          <p>Full-cycle admissions and test prep support, guiding you from diagnostic to acceptance letters.</p>
+          <div class="kicker" style="margin-bottom: 0;">Tier 3</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-strip" id="contact">
+      <h2>Ready to change how you see the LSAT?</h2>
+      <p style="color: var(--muted);">Begin with a private consultation to map your path forward.</p>
+      <button class="btn fill" onclick="alert('Open Contact Form')">Book a Consult</button>
+    </section>
+  </div>
+
+  <footer style="text-align: center; padding: 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px;">
+    <div><a href="#privacy">Privacy Policy</a> &nbsp;|&nbsp; <a href="#terms">Terms of Service</a></div>
+    <div style="margin-top: 10px;">&copy; 2026 Germaine Tutoring. All rights reserved.</div>
+  </footer>
+</div>
+
+<!-- ==================== COURSE PORTAL VIEW ==================== -->
+<div id="course" class="view">
+  <div class="portal-layout">
+    <aside class="portal-sidebar">
+      <nav class="portal-sidebar-nav">
+        <button class="active" onclick="switchPortalPanel('dashboard', this)">Dashboard</button>
+        <button onclick="switchPortalPanel('library', this)">Course Library</button>
+        <button onclick="switchPortalPanel('practice', this)">Practice & Explanations</button>
+        <button onclick="switchPortalPanel('review', this)">Blind Review</button>
+        <button onclick="switchPortalPanel('history', this)">History & Admin</button>
+      </nav>
+    </aside>
+
+    <main class="portal-content">
+      <!-- Dashboard -->
+      <div id="portal-dashboard" class="portal-panel active">
+        <h2 style="margin-bottom: 30px;">Welcome back, Student</h2>
+
+        <div class="dashboard-grid">
+          <div class="stat-card">
+            <div class="label">Questions Completed</div>
+            <div class="value">1,248</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Overall Accuracy</div>
+            <div class="value">84%</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Target Score</div>
+            <div class="value">172</div>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <h3>Course Progress</h3>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar"></div>
+          </div>
+          <p style="margin-top: 10px; font-size: 14px; color: var(--muted);">Module 4 of 9: Conditional Logic</p>
+        </div>
+
+        <div class="session-brief">
+          <div class="kicker">Upcoming Session</div>
+          <h3 style="margin-bottom: 10px;">Review: Necessary vs. Sufficient Assumptions</h3>
+          <p style="color: var(--muted); margin-bottom: 15px;">Thursday, Oct 14 at 2:00 PM EST via Zoom.</p>
+          <button class="btn">Join Zoom Room</button>
+        </div>
+      </div>
+
+      <!-- Course Library -->
+      <div id="portal-library" class="portal-panel">
+        <h2 style="margin-bottom: 30px;">Learning Library</h2>
+
+        <h3 style="margin-bottom: 20px;">Logical Reasoning Wing</h3>
+        <div class="programs-grid" style="margin-top: 0; margin-bottom: 40px;">
+          <div class="program-card">
+            <div class="kicker">Core</div>
+            <h3>Mastering the 21 Question Types</h3>
+            <p>A framework for routing instructions and identifying task requirements.</p>
+            <button class="btn">Resume Module</button>
+          </div>
+          <div class="program-card">
+            <div class="kicker">Advanced</div>
+            <h3>Conditional Logic Quantifiers</h3>
+            <p>Navigating 'some', 'most', 'many', and 'all' precisely.</p>
+            <button class="btn">Start Module</button>
+          </div>
+        </div>
+
+        <h3 style="margin-bottom: 20px;">Reading Comprehension Wing</h3>
+        <div class="programs-grid" style="margin-top: 0;">
+          <div class="program-card">
+            <div class="kicker">Core</div>
+            <h3>RC Difficulty Drivers</h3>
+            <p>Analyzing viewpoint shifts, abstraction, and nested syntax.</p>
+            <button class="btn">Start Module</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Practice & Explanations -->
+      <div id="portal-practice" class="portal-panel">
+        <h2 style="margin-bottom: 30px;">Practice & Explanations</h2>
+
+        <div class="practice-filters">
+          <select><option>Section: Logical Reasoning</option></select>
+          <select><option>Type: Flaw</option><option>Type: Assumption</option></select>
+          <select><option>Difficulty: High</option></select>
+        </div>
+
+        <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 30px;">
+          <div class="kicker">PT 89, Section 2, Question 14</div>
+          <h3 style="margin-bottom: 15px;">Detailed Explanation</h3>
+          <p style="color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
+            <strong>Gap Analysis:</strong> The argument jumps from a correlation between early music exposure and cognitive development to a causal claim that music lessons cause the development.
+          </p>
+          <div style="border-left: 3px solid var(--accent); padding-left: 15px; margin-bottom: 20px;">
+            <p><strong>(A) Correct:</strong> Points out an alternative cause (parents who enroll kids in music may also engage in other developmental activities).</p>
+          </div>
+          <div>
+            <p style="color: var(--muted); font-size: 14px;"><strong>(B) Incorrect:</strong> Fails to address the causal gap; merely discusses a subset of children.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blind Review -->
+      <div id="portal-review" class="portal-panel">
+        <h2 style="margin-bottom: 10px;">Blind Review & Wrong Answer Journal</h2>
+        <p style="color: var(--muted); margin-bottom: 30px;">A review is useful only if it changes a future decision.</p>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 30px; padding: 15px; background: var(--dark-green); color: var(--paper); border-radius: 8px;">
+          <span style="font-weight: 700;">5-Step Method:</span>
+          <span style="opacity: 0.8;">1. Job → 2. Claims → 3. Gap → 4. Prephrase → 5. Verify</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="review-table">
+            <thead>
+              <tr>
+                <th>Identifier</th>
+                <th>Analysis (Where it broke)</th>
+                <th>Correction</th>
+                <th>Rule for the Future</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>PT 92, S3, Q12</strong><br><span class="tag wrong">Missed</span></td>
+                <td>Misidentified the conclusion; chose intermediate conclusion.</td>
+                <td>The final sentence was actually a premise supporting the first sentence.</td>
+                <td>Always test claims with the "Why?" bridge. If A supports B, B is the conclusion.</td>
+              </tr>
+              <tr>
+                <td><strong>PT 91, S1, Q08</strong><br><span class="tag correct">Guessed</span></td>
+                <td>Fell for a scope shift trap in an inference question.</td>
+                <td>Choice C went beyond the text by asserting 'all' instead of 'most'.</td>
+                <td>Inference answers must be 100% provable. Beware strong quantifiers.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div id="portal-history" class="portal-panel">
+        <h2 style="margin-bottom: 30px;">History & Admin</h2>
+
+        <h3 style="margin-bottom: 15px;">Past Sessions</h3>
+        <ul style="list-style: none; padding: 0; margin: 0 0 30px 0;">
+          <li style="padding: 15px; background: var(--paper); border: 1px solid var(--line); margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between;">
+            <div><strong>Oct 7: Conditional Logic Drill</strong><br><span style="color: var(--muted); font-size: 14px;">Recording Available</span></div>
+            <button class="btn" style="padding: 5px 10px;">View Notes</button>
+          </li>
+          <li style="padding: 15px; background: var(--paper); border: 1px solid var(--line); margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between;">
+            <div><strong>Sep 30: RC Passage Mapping</strong><br><span style="color: var(--muted); font-size: 14px;">Recording Available</span></div>
+            <button class="btn" style="padding: 5px 10px;">View Notes</button>
+          </li>
+        </ul>
+
+        <h3 style="margin-bottom: 15px;">Assigned Homework</h3>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="padding: 15px; background: var(--paper); border: 1px solid var(--line); margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between;">
+            <div><strong>PT 88 Logical Reasoning Section 1</strong><br><span class="tag" style="background: var(--accent); color: white;">Due Oct 14</span></div>
+            <button class="btn" style="padding: 5px 10px;">Start</button>
+          </li>
+        </ul>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ==================== BLOG VIEW ==================== -->
+<div id="blog" class="view">
+  <div class="container">
+    <header class="blog-hero">
+      <h1>Insights, strategy, and reasoning breakdowns.</h1>
+      <p class="dek">Articles and guides from Germaine Tutoring.</p>
+    </header>
+
+    <div class="kicker">Recent Posts</div>
+    <div class="blog-grid" style="margin-bottom: 60px;">
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Reading Comprehension</div>
+          <h3>RC Question Type Map</h3>
+          <p>A deep dive into Reading Comprehension question structures.</p>
+          <a href="#" class="read-more">Read Article &rarr;</a>
+        </div>
+      </article>
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Logical Reasoning</div>
+          <h3>Conditional Logic Quantifier Guide</h3>
+          <p>Navigating 'some', 'most', 'many', and 'all'.</p>
+          <a href="#" class="read-more">Read Article &rarr;</a>
+        </div>
+      </article>
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Framework</div>
+          <h3>Mastering the 21 LR Question Types</h3>
+          <p>A framework for routing instructions.</p>
+          <a href="#" class="read-more">Read Article &rarr;</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="campaign-header">
+      <div class="kicker" style="font-size: 14px;">Campaign</div>
+      <h2>There Is No LSAT Magic</h2>
+      <p style="color: var(--muted); max-width: 600px; margin: 15px auto 0;">The LSAT becomes manageable when you identify the repeatable job underneath each question.</p>
+    </div>
+
+    <div class="blog-grid">
+      <!-- Post 1 -->
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Analysis</div>
+          <h3>Everything Flaws</h3>
+          <p>I analyzed the full range of Flaw questions so you can start seeing the recurring patterns.</p>
+          <a href="#" class="read-more">View Atlas &rarr;</a>
+        </div>
+      </article>
+      <!-- Post 2 -->
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Method</div>
+          <h3>Why Learn LR Question Types?</h3>
+          <p>If LR is just reasoning, why do I need all these question types? Question types are routing instructions.</p>
+          <a href="#" class="read-more">View Map &rarr;</a>
+        </div>
+      </article>
+      <!-- Post 3 -->
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Reading Comprehension</div>
+          <h3>Complete RC Difficulty Ranking</h3>
+          <p>Why "I'm bad at science passages" is the wrong diagnosis.</p>
+          <a href="#" class="read-more">View Heatmap &rarr;</a>
+        </div>
+      </article>
+      <!-- Post 4 -->
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Strategy</div>
+          <h3>Prephrasing</h3>
+          <p>Prephrasing is not predicting the answer. Do your reasoning before the distractors influence it.</p>
+          <a href="#" class="read-more">Read Article &rarr;</a>
+        </div>
+      </article>
+      <!-- Post 5 -->
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Walkthrough</div>
+          <h3>Thinking Simply / Atomizing</h3>
+          <p>Watch me turn an 85-word stimulus into five simple statements.</p>
+          <a href="#" class="read-more">Watch Video &rarr;</a>
+        </div>
+      </article>
+      <!-- Post 6 -->
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Review</div>
+          <h3>Useful vs. Useless Wrong Answer Journaling</h3>
+          <p>Your Wrong Answer Journal may not be helping you improve. Entries must identify the exact reasoning mistake.</p>
+          <a href="#" class="read-more">Read Article &rarr;</a>
+        </div>
+      </article>
+      <!-- Post 7 -->
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="meta">Walkthrough</div>
+          <h3>There Is No LSAT Magic: Here Is Exactly Where My -0 Broke</h3>
+          <p>A strong section becomes easier to understand when you can see the decisions behind it.</p>
+          <a href="#" class="read-more">Watch Video &rarr;</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchView(viewId, btn) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+
+    document.querySelectorAll('.global-nav .tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function switchPortalPanel(panelId, btn) {
+    document.querySelectorAll('.portal-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('portal-' + panelId).classList.add('active');
+
+    document.querySelectorAll('.portal-sidebar-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>
