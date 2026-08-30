@@ -1,0 +1,2 @@
+# Jules portrayal run
+Read `inputs/SOURCE-MANIFEST.json`. Initialize `current-site` with `git submodule update --init --recursive current-site`. Inspect the assigned page and shared portal context. Use the named uncompressed theme HTML as the visual-system specimen. Build only the assigned page. Deliver `portrayal.html`, `integration.json`, and `proof/`; use `BLOCKED.md` if authoritative source is unavailable.
